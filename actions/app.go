@@ -7,11 +7,9 @@ import (
 	paramlogger "github.com/gobuffalo/mw-paramlogger"
 	"github.com/unrolled/secure"
 
-	"github.com/gobuffalo/buffalo-pop/pop/popmw"
 	contenttype "github.com/gobuffalo/mw-contenttype"
 	"github.com/gobuffalo/x/sessions"
 	"github.com/rs/cors"
-	"github.com/zet4/frodo/models"
 )
 
 // ENV is used to help switch settings based on where the
@@ -40,6 +38,7 @@ func App() *buffalo.App {
 			PreWares: []buffalo.PreWare{
 				cors.Default().Handler,
 			},
+			Addr:        "localhost:3001",
 			SessionName: "_frodo_session",
 		})
 
@@ -54,11 +53,15 @@ func App() *buffalo.App {
 
 		// Wraps each request in a transaction.
 		//  c.Value("tx").(*pop.Connection)
+
 		// Remove to disable this.
-		app.Use(popmw.Transaction(models.DB))
+		// app.Use(popmw.Transaction(models.DB))
 
 		app.GET("/", HomeHandler)
 
+		app.GET("/books", BooksList)
+
+		app.GET("/books/{id}", BooksGet)
 	}
 
 	return app
